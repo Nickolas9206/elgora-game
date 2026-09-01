@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Хроники Эльгоры</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; font-family: 'Montserrat', sans-serif; }
+        body { background-color: #0b0c10; color: #ffffff; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .main-container { position: relative; width: 100%; max-width: 480px; height: 100%; max-height: 800px; box-shadow: 0 0 20px rgba(0,0,0,0.5); overflow: hidden; }
+
+        /* --- ОБЩИЕ СТИЛИ ЭКРАНОВ --- */
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; transition: opacity 0.5s ease; }
+        .bg-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-position: center center; background-size: cover; background-repeat: no-repeat; z-index: 1; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
+        .content { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; }
+
+        /* --- 1. ЭКРАН ЗАГРУЗКИ (Фон с факелами) --- */
+        #loading-screen { opacity: 1; z-index: 100; background-color: #0b0c10; }
+        #loading-bg { background-image: url('https://i.imgur.com/7cM57i8.jpeg'); }
+        #loading-screen .overlay { background: linear-gradient(to bottom, rgba(11, 12, 16, 0.5) 0%, rgba(11, 12, 16, 0.8) 70%, rgba(11, 12, 16, 0.95) 100%); }
+        
+        .game-title { text-align: center; margin-top: auto; margin-bottom: auto; padding: 0 20px; }
+        .game-title h1 { font-family: 'Cinzel Decorative', serif; font-size: 42px; font-weight: 900; background: linear-gradient(180deg, #ffe066 0%, #f39c12 50%, #d35400 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 25px rgba(243, 156, 18, 0.8); line-height: 1.1; letter-spacing: 1px; }
+        .game-title p { font-size: 14px; color: #c8d6e5; letter-spacing: 4px; text-transform: uppercase; margin-top: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.9); font-weight: 600; }
+
+        .loader-area { width: 100%; max-width: 360px; text-align: center; margin: 0 auto 35px auto; padding: 0 20px; }
+        .progress-bar-bg { width: 100%; height: 12px; background: rgba(0, 0, 0, 0.6); border: 1px solid #f39c12; border-radius: 8px; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.7); }
+        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #d35400, #f1c40f); box-shadow: 0 0 10px #f1c40f; transition: width 0.15s linear; }
+        .status-text { font-size: 12px; color: #f1c40f; margin-top: 10px; font-weight: 700; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+        .hint-box { background: rgba(11, 12, 16, 0.85); border: 1px solid rgba(243, 156, 18, 0.3); border-left: 3px solid #f39c12; padding: 12px 18px; border-radius: 8px; font-size: 11px; color: #c8d6e5; margin-top: 20px; min-height: 55px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 12px rgba(0,0,0,0.4); font-weight: 500; line-height: 1.4;}
+
+        /* --- 2. ГЛАВНЫЙ ИГРОВОЙ ХАБ (ЭПИЧЕСКАЯ БИТВА) --- */
+        #main-hub { opacity: 0; z-index: 90; pointer-events: none; }
+        #hub-bg { background-image: url('https://i.imgur.com/sP8Q4aR.jpeg'); /* Новый фон битвы */ filter: brightness(0.85); }
+        #main-hub .overlay { background: radial-gradient(circle at center, rgba(11, 12, 16, 0.2) 0%, rgba(11, 12, 16, 0.7) 100%); }
+
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(26, 29, 41, 0.7); border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(3px); position: relative; z-index: 5; }
+        .profile-info { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 45px; height: 45px; border-radius: 12px; background: linear-gradient(135deg, #f39c12, #e67e22); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #f1c40f; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .user-details .name { font-weight: 800; font-size: 16px; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        .user-details .level { font-size: 12px; color: #f39c12; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        .resources { display: flex; gap: 15px; }
+        .res-item { background: rgba(11, 12, 16, 0.8); padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 800; color: #f1c40f; border: 1px solid rgba(241, 196, 15, 0.2); box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 30px 20px; position: relative; z-index: 5; }
+        /* Герои на этой картинке уже есть, поэтому центральный блок делаем прозрачным */
+        .hero-stage { width: 200px; height: 50px; background: transparent; border: none; box-shadow: none; }
+        .hero-avatar { display: none; }
+
+        .btn-action-main { width: 100%; max-width: 280px; padding: 18px; margin-top: 30px; background: linear-gradient(180deg, #f1c40f 0%, #f39c12 100%); border: none; border-radius: 14px; color: #0b0c10; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 6px 0 #b7950b, 0 15px 30px rgba(241, 196, 15, 0.4); cursor: pointer; position: relative; z-index: 10; }
+        .btn-action-main:active { transform: translateY(3px); box-shadow: 0 3px 0 #b7950b; }
+
+        .bottom-nav { display: flex; justify-content: space-around; align-items: center; background: rgba(26, 29, 41, 0.95); padding: 12px 6px; border-top: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); position: relative; z-index: 5; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #7f8c8d; font-size: 11px; font-weight: 700; cursor: pointer; flex: 1; transition: color 0.2s; }
+        .nav-item:hover { color: #bdc3c7; }
+        .nav-item.active { color: #f1c40f; text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+        .nav-item .icon { font-size: 26px; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- 1. ЭКРАН ЗАГРУЗКИ (Фон с факелами) -->
+        <div id="loading-screen" class="screen">
+            <div id="loading-bg" class="bg-image"></div>
+            <div class="overlay"></div>
+            <div class="content">
+                <div class="game-title">
+                    <h1>ХРОНИКИ<br>ЭЛЬГОРЫ</h1>
+                    <p>Подземелья и Наёмники</p>
+                </div>
+                <div class="loader-area">
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="status-text" id="status-text">Подготовка... 0%</div>
+                    <div class="hint-box" id="hint-text">
+                        💡 Совет: Рыцари принимают основной урон на себя. Держите лучников за их спинами!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. ГЛАВНЫЙ ИГРОВОЙ ХАБ (Фон битвы с монстрами) -->
+        <div id="main-hub" class="screen">
+            <div id="hub-bg" class="bg-image"></div>
+            <div class="overlay"></div>
+            <div class="content">
+                <div class="header">
+                    <div class="profile-info">
+                        <div class="avatar">🧙‍♂️</div>
+                        <div class="user-details">
+                            <div class="name" id="user-name">Герой</div>
+                            <div class="level">Уровень 1</div>
+                        </div>
+                    </div>
+                    <div class="resources">
+                        <div class="res-item">💰 10</div>
+                        <div class="res-item">💎 0</div>
+                    </div>
+                </div>
+                <div class="main-content">
+                    <div class="hero-stage">
+                        <!-- Аватар героя убран, так как герои нарисованы на фоне -->
+                    </div>
+                    <button class="btn-action-main">⚔️ В ПОДЗЕМЕЛЬЕ</button>
+                </div>
+                <div class="bottom-nav">
+                    <div class="nav-item active">
+                        <div class="icon">⚔️</div>
+                        <span>Битва</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="icon">🎒</div>
+                        <span>Герой</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="icon">🛒</div>
+                        <span>Минимум</span>
+                    </div>
+                     <div class="nav-item">
+                        <div class="icon">⚙️</div>
+                        <span>Опции</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
+        }
+        const hints = [
+            "💡 Совет: Рыцари принимают основной урон на себя. Держите лучников за их спинами!",
+            "💡 Совет: На 3-м подуровне каждого этажа вас ждет Босс. Готовьте лучшие отряды!",
+            "💡 Совет: Не забывайте заходить в Кузницу города, чтобы улучшать доспехи наёмников.",
+            "💡 Совет: Накапливайте энергию в бою, чтобы призывать более мощных юнитов."
+        ];
+        let progress = 0;
+        const fillElement = document.getElementById('progress-fill');
+        const statusElement = document.getElementById('status-text');
+        const hintElement = document.getElementById('hint-text');
+        let hintIndex = 0;
+        const hintInterval = setInterval(() => {
+            hintIndex = (hintIndex + 1) % hints.length;
+            hintElement.innerText = hints[hintIndex];
+        }, 2
