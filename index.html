@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Chronicles of Elgora</title>
+    <title>Хроники Эльгоры</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -28,23 +28,70 @@
 
         .loader-area { width: 100%; max-width: 360px; text-align: center; margin: 0 auto 35px auto; padding: 0 20px; }
         .progress-bar-bg { width: 100%; height: 12px; background: rgba(0, 0, 0, 0.6); border: 1px solid #f39c12; border-radius: 8px; overflow: hidden; }
+        .progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #f39c12, #ffe066); box-shadow: 0 0 10px #f39c12; transition: width 0.2s ease; }
+        .loading-text { font-size: 13px; color: #a4b0be; margin-top: 10px; letter-spacing: 1px; font-weight: 600; }
+
+        /* --- ИГРОВОЕ МЕНЮ --- */
+        #game-menu { display: none; background-color: #0b0c10; padding: 20px; text-align: center; justify-content: center; align-items: center; }
+        .menu-title { font-family: 'Cinzel Decorative', serif; font-size: 28px; color: #f39c12; margin-bottom: 20px; }
+        .menu-btn { width: 100%; max-width: 280px; padding: 14px; margin: 10px 0; background: linear-gradient(180deg, #f39c12, #d35400); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+        .menu-btn:active { transform: scale(0.97); }
     </style>
 </head>
 <body>
     <div class="main-container">
+        <!-- Экран загрузки -->
         <div id="loading-screen" class="screen">
             <div id="loading-bg" class="bg-image"></div>
             <div class="overlay"></div>
             <div class="content">
                 <div class="game-title">
-                    <h1>CHRONICLES OF ELGORA</h1>
-                    <p>Dungeons & Mercenaries</p>
+                    <h1>Хроники Эльгоры</h1>
+                    <p>Подземелья и Наемники</p>
                 </div>
                 <div class="loader-area">
-                    <div class="progress-bar-bg"></div>
+                    <div class="progress-bar-bg">
+                        <div id="progress-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <div id="loading-status" class="loading-text">Подготовка... 0%</div>
                 </div>
             </div>
         </div>
+
+        <!-- Главное меню игры -->
+        <div id="game-menu" class="screen">
+            <div class="menu-title">Эльгора ждет!</div>
+            <button class="menu-btn" onclick="alert('Вход в подземелье скоро откроется!')">В бой</button>
+            <button class="menu-btn" onclick="alert('Отряд наемников пуст')">Отряд</button>
+        </div>
     </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        let progress = 0;
+        let fill = document.getElementById('progress-fill');
+        let statusText = document.getElementById('loading-status');
+        let loadingScreen = document.getElementById('loading-screen');
+        let gameMenu = document.getElementById('game-menu');
+
+        let interval = setInterval(function() {
+            progress += Math.floor(Math.random() * 8) + 3;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                setTimeout(function() {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(function() {
+                        loadingScreen.style.display = 'none';
+                        gameMenu.style.display = 'flex';
+                    }, 500);
+                }, 400);
+            }
+            fill.style.width = progress + '%';
+            statusText.innerText = 'Загрузка мира... ' + progress + '%';
+        }, 120);
+    </script>
 </body>
 </html>
