@@ -18,7 +18,7 @@
            ШРИФТЫ
            ========================================================= */
 
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Nunito:wght@600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Ruslan+Display&display=swap');
 
 
         /* =========================================================
@@ -118,8 +118,14 @@
                 calc(82px + env(safe-area-inset-bottom));
 
             background-position: center;
-            background-size: cover;
+
+            /* Увеличиваем фон, чтобы серые края картинки
+               уходили за пределы экрана */
+            background-size: auto 120%;
+
             background-repeat: no-repeat;
+
+            background-color: #08090d;
 
             opacity: 0;
 
@@ -558,10 +564,12 @@
 
 
         /*
-        ВАЖНО:
-        Картинка специально увеличена до 120%.
-        Благодаря этому её серая рамка должна уйти
-        за границы экрана.
+        =========================================================
+        ФОН ЗАГРУЗКИ
+        =========================================================
+
+        Картинка увеличена, чтобы серые края
+        не были видны на экране.
         */
 
         .loading-bg {
@@ -619,14 +627,9 @@
         }
 
 
-        /*
-        =========================================================
-        НАЗВАНИЕ
-        =========================================================
-
-        ОСТАВЛЯЕМ.
-        Это дополнительное название поверх картинки.
-        */
+        /* =========================================================
+           НАЗВАНИЕ
+           ========================================================= */
 
         .game-title {
             position: relative;
@@ -635,19 +638,20 @@
 
             color: #fff;
 
+            /* Сказочный шрифт */
             font-family:
-                'Cinzel',
+                'Ruslan Display',
                 Georgia,
                 serif;
 
             font-size:
                 clamp(34px, 11vw, 54px);
 
-            font-weight: 700;
+            font-weight: 400;
 
             line-height: .98;
 
-            letter-spacing: 2px;
+            letter-spacing: 1px;
 
             text-align: center;
 
@@ -812,20 +816,24 @@
                 min-height: 52px;
             }
 
+
             .avatar {
                 width: 34px;
                 height: 34px;
                 font-size: 17px;
             }
 
+
             .content-box {
                 padding-top: 10px;
                 padding-bottom: 10px;
             }
 
+
             .section-desc {
                 margin-bottom: 14px;
             }
+
 
             .nav-bar {
                 min-height: 64px;
@@ -838,6 +846,7 @@
         .nav-item {
             -webkit-touch-callout: none;
         }
+
 
     </style>
 </head>
