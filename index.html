@@ -5,16 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Хроники Эльгоры</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pangolin&display=swap');
-        
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
-        html, body { width: 100%; height: 100%; background-color: #0b0c10; color: #ffffff; overflow: hidden; position: fixed; }
         
-        .main-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; width: 100dvw; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; background: #0b0c10; }
+        /* Растягиваем на весь экран без серых полей */
+        html, body { 
+            width: 100%; 
+            height: 100%; 
+            background-color: #0b0c10; 
+            color: #ffffff; 
+            overflow: hidden; 
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        .app-container { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            width: 100dvw; 
+            height: 100dvh; 
+            display: flex; 
+            flex-direction: column; 
+            background: #0f1015;
+            overflow: hidden;
+        }
 
-        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; }
-        .screen.menu-active { height: calc(100% - 75px); }
+        /* Верхняя панель профиля и баланса (как в топ играх) */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(15, 16, 21, 0.95);
+            border-bottom: 1px solid rgba(243, 156, 18, 0.3);
+            z-index: 50;
+        }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 42px; height: 42px; border-radius: 12px; background: #f39c12; border: 2px solid #f39c12; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; }
+        .username-block { display: flex; flex-direction: column; }
+        .nickname { font-weight: 800; font-size: 15px; color: #fff; }
+        .user-lvl { font-size: 11px; background: rgba(243, 156, 18, 0.2); color: #f39c12; padding: 1px 6px; border-radius: 6px; width: fit-content; font-weight: bold; border: 1px solid rgba(243, 156, 18, 0.4); }
+        
+        .balance-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(243, 156, 18, 0.5);
+            font-weight: 800;
+            font-size: 14px;
+            color: #f39c12;
+        }
+
+        /* Основная игровая область */
+        .game-viewport {
+            position: relative;
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .screen { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            display: none; 
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
         .screen.active { display: flex; }
         
         .bg-img { 
@@ -23,144 +94,194 @@
             left: 0; 
             width: 100%; 
             height: 100%; 
-            background-position: center center; 
+            background-position: center; 
             background-size: cover; 
-            background-repeat: no-repeat; 
             z-index: 1; 
         }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; background: rgba(0, 0, 0, 0.55); }
-        .content { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; background: rgba(5, 6, 8, 0.7); }
+        .content-box { position: relative; z-index: 10; width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
 
         /* Экран загрузки */
-        #loading-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #0b0c10; transition: opacity 0.6s ease; }
-        
-        /* Встроенный готический логотип (не зависит от внешних шрифтов) */
-        .title-container {
-            width: 100%;
-            max-width: 360px;
-            margin-bottom: auto;
-            margin-top: 30px;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.9));
+        #loading-screen { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: 1000; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            background: #0b0c10; 
+            transition: opacity 0.5s ease; 
         }
         
-        .loader-area { width: 100%; max-width: 320px; margin-bottom: 50px; text-align: center; }
-        .progress-bar-bg { width: 100%; height: 14px; background: rgba(0, 0, 0, 0.7); border: 2px solid #f39c12; border-radius: 7px; padding: 2px; overflow: hidden; }
-        .progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #d35400, #f39c12, #ffe066); border-radius: 4px; transition: width 0.2s ease-out; }
-        .loading-text { font-size: 15px; color: #ffe066; margin-top: 10px; text-shadow: 0 2px 2px rgba(0,0,0,0.8); font-family: 'Pangolin', cursive; }
+        .game-title { 
+            font-family: 'Cinzel', serif; 
+            font-size: 42px; 
+            font-weight: bold; 
+            color: #ffffff;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.9), 0 0 20px rgba(243,156,18,0.4);
+            margin-bottom: 30px; 
+            line-height: 1.2;
+        }
+        
+        .loader-area { width: 80%; max-width: 280px; }
+        .progress-bar-bg { width: 100%; height: 12px; background: rgba(0, 0, 0, 0.8); border: 2px solid #f39c12; border-radius: 6px; padding: 1px; overflow: hidden; }
+        .progress-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #d35400, #f39c12, #ffe066); border-radius: 4px; transition: width 0.1s linear; }
+        .loading-text { font-size: 14px; color: #ffe066; margin-top: 12px; font-weight: 600; }
 
+        /* Карточки и элементы интерфейса */
         .section-title { 
-            font-size: 40px; 
-            color: #f5f6fa; 
-            font-family: 'Times New Roman', serif;
-            font-weight: bold;
-            text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 3px 8px #000; 
-            margin-bottom: 10px; 
+            font-family: 'Cinzel', serif; 
+            font-size: 32px; 
+            color: #f39c12; 
+            text-shadow: 0 2px 5px rgba(0,0,0,0.8); 
+            margin-bottom: 12px; 
         }
-        .section-desc { font-size: 16px; color: #dfe4ea; text-shadow: 0 1px 3px #000; font-family: 'Pangolin', cursive; }
+        .section-desc { font-size: 15px; color: #dfe4ea; text-shadow: 0 1px 3px rgba(0,0,0,0.8); margin-bottom: 25px; line-height: 1.4; }
 
-        /* Нижнее меню */
-        .nav-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 75px; background: linear-gradient(180deg, #16192b 0%, #0b0c10 100%); border-top: 2px solid #f39c12; display: none; justify-content: space-around; align-items: center; z-index: 100; padding: 0 5px; box-shadow: 0 -5px 15px rgba(0,0,0,0.6); }
+        .action-btn {
+            background: linear-gradient(135deg, #f39c12, #d35400);
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 800;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+            transition: transform 0.1s;
+        }
+        .action-btn:active { transform: scale(0.96); }
+
+        /* Нижнее премиальное меню */
+        .nav-bar { 
+            height: 70px; 
+            background: rgba(15, 16, 21, 0.98); 
+            border-top: 1px solid rgba(243, 156, 18, 0.3); 
+            display: none; 
+            justify-content: space-around; 
+            align-items: center; 
+            z-index: 100; 
+            padding: 0 5px;
+        }
         .nav-bar.visible { display: flex; }
         
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; transition: transform 0.2s; position: relative; }
-        .nav-item:active { transform: scale(0.9); }
-        .nav-item.active { background: rgba(243, 156, 18, 0.2); border: 1px solid #f39c12; box-shadow: 0 0 10px rgba(243,156,18,0.5); }
-        .nav-icon { font-size: 22px; }
-        .nav-label { font-size: 10px; color: #a4b0be; margin-top: 2px; font-weight: bold; font-family: 'Pangolin', cursive; }
+        .nav-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            flex: 1;
+            height: 100%;
+            transition: background 0.2s;
+        }
+        .nav-item.active { background: rgba(243, 156, 18, 0.1); border-top: 2px solid #f39c12; }
+        .nav-icon { font-size: 20px; }
+        .nav-label { font-size: 11px; color: #a4b0be; margin-top: 3px; font-weight: 700; }
         .nav-item.active .nav-label { color: #f39c12; }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <!-- Экран загрузки -->
-        <div id="loading-screen">
-            <div class="bg-img" style="background-image: url('loading.jpg');"></div>
-            <div class="overlay"></div>
-            <div class="content" style="z-index: 10;">
-                
-                <!-- Готический заголовок в векторном виде (гарантированно отобразится правильно) -->
-                <div class="title-container">
-                    <svg viewBox="0 0 500 180" width="100%" height="100%">
-                        <defs>
-                            <style>
-                                @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
-                                .g-text {
-                                    font-family: 'UnifrakturMaguntia', cursive, serif;
-                                    font-size: 72px;
-                                    font-weight: bold;
-                                    text-anchor: middle;
-                                }
-                            </style>
-                        </defs>
-                        <!-- Черный контур для объема -->
-                        <text x="250" y="72" class="g-text" fill="#000" stroke="#000" stroke-width="10" stroke-linejoin="round">Хроники</text>
-                        <text x="250" y="145" class="g-text" fill="#000" stroke="#000" stroke-width="10" stroke-linejoin="round">Эльгоры</text>
-                        <!-- Белый текст поверх контура -->
-                        <text x="250" y="72" class="g-text" fill="#ffffff">Хроники</text>
-                        <text x="250" y="145" class="g-text" fill="#ffffff">Эльгоры</text>
-                    </svg>
+    <div class="app-container">
+        <!-- Верхняя плашка профиля (как в успешных играх) -->
+        <header class="top-header">
+            <div class="user-info">
+                <div class="avatar">🛡️</div>
+                <div class="username-block">
+                    <span class="nickname" id="user-nickname">Герой</span>
+                    <span class="user-lvl">Уровень 1</span>
                 </div>
-                
-                <div class="loader-area">
-                    <div class="progress-bar-bg">
-                        <div id="progress-fill" class="progress-bar-fill"></div>
+            </div>
+            <div class="balance-badge">
+                🪙 <span id="gold-count">500</span>
+            </div>
+        </header>
+
+        <!-- Игровой экран (Viewport) -->
+        <div class="game-viewport">
+            <!-- Экран загрузки -->
+            <div id="loading-screen">
+                <div class="bg-img" style="background-image: url('loading.jpg');"></div>
+                <div class="overlay"></div>
+                <div class="content-box" style="z-index: 10;">
+                    <div class="game-title">Хроники<br>Эльгоры</div>
+                    <div class="loader-area">
+                        <div class="progress-bar-bg">
+                            <div id="progress-fill" class="progress-bar-fill"></div>
+                        </div>
+                        <div id="loading-status" class="loading-text">Загрузка мира... 0%</div>
                     </div>
-                    <div id="loading-status" class="loading-text">Загрузка мира... 0%</div>
+                </div>
+            </div>
+
+            <!-- Экраны игры -->
+            <div id="screen-hero" class="screen">
+                <div class="bg-img" style="background-image: url('hero.jpg');"></div>
+                <div class="overlay"></div>
+                <div class="content-box">
+                    <h2 class="section-title">Герой</h2>
+                    <p class="section-desc">Твой отряд готов к походу в подземелье и сражениям с монстрами за сокровища.</p>
+                    <button class="action-btn" onclick="alert('В бой!')">В бой</button>
+                </div>
+            </div>
+
+            <div id="screen-city" class="screen">
+                <div class="bg-img" style="background-image: url('hero.jpg');"></div>
+                <div class="overlay"></div>
+                <div class="content-box">
+                    <h2 class="section-title">Город</h2>
+                    <p class="section-desc">Посети таверну, зайди в кузницу за улучшением доспехов или возьми заказ у старосты.</p>
+                    <button class="action-btn" onclick="alert('Вход в таверну')">В таверну</button>
+                </div>
+            </div>
+
+            <div id="screen-pvp" class="screen">
+                <div class="bg-img" style="background-image: url('hero.jpg');"></div>
+                <div class="overlay"></div>
+                <div class="content-box">
+                    <h2 class="section-title">Арена ПвП</h2>
+                    <p class="section-desc">Сражайся на арене против других игроков, докажи своё превосходство и забери золото.</p>
+                    <button class="action-btn" onclick="alert('Поиск соперника...')">Найти бой</button>
+                </div>
+            </div>
+
+            <div id="screen-shop" class="screen">
+                <div class="bg-img" style="background-image: url('hero.jpg');"></div>
+                <div class="overlay"></div>
+                <div class="content-box">
+                    <h2 class="section-title">Магазин</h2>
+                    <p class="section-desc">Редкие артефакты, зелья исцеления и легендарное снаряжение для твоего отряда.</p>
+                    <button class="action-btn" onclick="alert('Открытие магазина')">Открыть сундук</button>
+                </div>
+            </div>
+
+            <div id="screen-friends" class="screen">
+                <div class="bg-img" style="background-image: url('hero.jpg');"></div>
+                <div class="overlay"></div>
+                <div class="content-box">
+                    <h2 class="section-title">Друзья</h2>
+                    <p class="section-desc">Приглашай верных соратников в игру и получайте ценные бонусы вместе.</p>
+                    <button class="action-btn" onclick="alert('Ссылка скопирована')">Пригласить друга</button>
+                </div>
+            </div>
+
+            <div id="screen-settings" class="screen">
+                <div class="bg-img" style="background-image: url('hero.jpg');"></div>
+                <div class="overlay"></div>
+                <div class="content-box">
+                    <h2 class="section-title">Настройки</h2>
+                    <p class="section-desc">Управление звуковыми эффектами, музыкальным сопровождением и аккаунтом.</p>
+                    <button class="action-btn" onclick="alert('Настройки сохранены')">Сохранить</button>
                 </div>
             </div>
         </div>
 
-        <!-- Игровые экраны -->
-        <div id="screen-hero" class="screen bg-img" style="background-image: url('hero.jpg');">
-            <div class="overlay"></div>
-            <div class="content">
-                <h2 class="section-title">Герой</h2>
-                <p class="section-desc">Твой отряд готов к бою с монстрами.</p>
-            </div>
-        </div>
-
-        <div id="screen-city" class="screen bg-img" style="background-image: url('hero.jpg');">
-            <div class="overlay"></div>
-            <div class="content">
-                <h2 class="section-title">Город</h2>
-                <p class="section-desc">Таверна, кузница и задания жителей.</p>
-            </div>
-        </div>
-
-        <div id="screen-pvp" class="screen bg-img" style="background-image: url('hero.jpg');">
-            <div class="overlay"></div>
-            <div class="content">
-                <h2 class="section-title">Арена ПвП</h2>
-                <p class="section-desc">Сражайся с другими игроками за славу и золото.</p>
-            </div>
-        </div>
-
-        <div id="screen-shop" class="screen bg-img" style="background-image: url('hero.jpg');">
-            <div class="overlay"></div>
-            <div class="content">
-                <h2 class="section-title">Магазин</h2>
-                <p class="section-desc">Экипировка, зелья и редкие артефакты.</p>
-            </div>
-        </div>
-
-        <div id="screen-friends" class="screen bg-img" style="background-image: url('hero.jpg');">
-            <div class="overlay"></div>
-            <div class="content">
-                <h2 class="section-title">Друзья</h2>
-                <p class="section-desc">Приглашай соратников и получай бонусы.</p>
-            </div>
-        </div>
-
-        <div id="screen-settings" class="screen bg-img" style="background-image: url('hero.jpg');">
-            <div class="overlay"></div>
-            <div class="content">
-                <h2 class="section-title">Настройки</h2>
-                <p class="section-desc">Звук, музыка и управление аккаунтом.</p>
-            </div>
-        </div>
-
-        <!-- Нижнее меню -->
-        <div id="nav-bar" class="nav-bar">
+        <!-- Нижнее меню (как в лучших WebApp) -->
+        <nav id="nav-bar" class="nav-bar">
             <div class="nav-item active" onclick="switchTab('hero', this)">
                 <div class="nav-icon">🛡️</div>
                 <div class="nav-label">Герой</div>
@@ -185,14 +306,21 @@
                 <div class="nav-icon">⚙️</div>
                 <div class="nav-label">Настройки</div>
             </div>
-        </div>
+        </nav>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        try { tg.requestFullscreen(); } catch (e) {}
-        tg.setHeaderColor('#0b0c10');
+        tg.setHeaderColor('#0f1015');
+
+        // Автоматически подтягиваем имя игрока из Телеграма, если оно есть
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            let userName = tg.initDataUnsafe.user.first_name;
+            if (userName) {
+                document.getElementById('user-nickname').innerText = userName;
+            }
+        }
 
         let progress = 0;
         let fill = document.getElementById('progress-fill');
@@ -201,7 +329,7 @@
         let navBar = document.getElementById('nav-bar');
 
         let interval = setInterval(function() {
-            progress += Math.floor(Math.random() * 6) + 3;
+            progress += Math.floor(Math.random() * 8) + 4;
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(interval);
@@ -209,27 +337,24 @@
                     loadingScreen.style.opacity = '0';
                     setTimeout(function() {
                         loadingScreen.style.display = 'none';
-                        document.getElementById('screen-hero').classList.add('active', 'menu-active');
+                        document.getElementById('screen-hero').classList.add('active');
                         navBar.classList.add('visible');
-                    }, 500);
-                }, 300);
+                    }, 400);
+                }, 200);
             }
             fill.style.width = progress + '%';
             statusText.innerText = 'Загрузка мира... ' + progress + '%';
-        }, 80);
+        }, 50);
 
-        let currentActiveTab = 'horo';
+        let currentActiveTab = 'hero';
         function switchTab(tabName, element) {
             if (currentActiveTab === tabName) return;
             currentActiveTab = tabName;
 
-            document.querySelectorAll('.screen').forEach(s => {
-                s.classList.remove('active');
-                s.classList.add('menu-active');
-            });
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
 
-            document.getElementById('screen-' + tabName).classList.add('active', 'menu-active');
+            document.getElementById('screen-' + tabName).classList.add('active');
             element.classList.add('active');
         }
     </script>
