@@ -18,7 +18,9 @@
            ШРИФТЫ
            ========================================================= */
 
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Ruslan+Display&display=swap');
+        @import url(
+            'https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Ruslan+Display&display=swap'
+        );
 
 
         /* =========================================================
@@ -86,7 +88,7 @@
 
 
         /* =========================================================
-           ЭКРАНЫ
+           ИГРОВЫЕ ЭКРАНЫ
            ========================================================= */
 
         .screen {
@@ -117,19 +119,28 @@
             padding-bottom:
                 calc(82px + env(safe-area-inset-bottom));
 
-            background-position: center;
-
-            /* Увеличиваем фон, чтобы серые края картинки
-               уходили за пределы экрана */
-            background-size: auto 120%;
-
+            /*
+             * Основной фон.
+             *
+             * COVER заставляет картинку полностью заполнить
+             * всё окно Telegram.
+             */
+            background-position: center center;
+            background-size: cover;
             background-repeat: no-repeat;
 
             background-color: #08090d;
 
             opacity: 0;
 
-            transition: opacity .25s ease;
+            transition:
+                opacity .25s ease;
+
+            /*
+             * Создаём отдельный stacking context,
+             * чтобы фон и интерфейс не конфликтовали.
+             */
+            isolation: isolate;
         }
 
 
@@ -139,7 +150,43 @@
         }
 
 
-        /* затемнение игровых экранов */
+        /*
+         * =========================================================
+         * ДОПОЛНИТЕЛЬНЫЙ ФОН
+         * =========================================================
+         *
+         * Это главное исправление серых полос.
+         *
+         * Картинка здесь увеличивается до 106% и выходит
+         * за границы экрана со всех сторон.
+         */
+
+        .screen::after {
+            content: "";
+
+            position: absolute;
+
+            z-index: 0;
+
+            top: -3%;
+            left: -3%;
+
+            width: 106%;
+            height: 106%;
+
+            background-image: inherit;
+
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+
+            pointer-events: none;
+        }
+
+
+        /*
+         * Затемнение поверх картинки.
+         */
 
         .screen::before {
             content: "";
@@ -147,17 +194,27 @@
             position: absolute;
             inset: 0;
 
+            z-index: 1;
+
             background:
                 linear-gradient(
                     180deg,
-                    rgba(4, 5, 8, .25) 0%,
-                    rgba(4, 5, 8, .55) 55%,
-                    rgba(4, 5, 8, .82) 100%
+                    rgba(4, 5, 8, .20) 0%,
+                    rgba(4, 5, 8, .48) 55%,
+                    rgba(4, 5, 8, .78) 100%
                 );
 
-            z-index: 1;
-
             pointer-events: none;
+        }
+
+
+        /*
+         * Все элементы интерфейса поверх фона.
+         */
+
+        .screen > * {
+            position: relative;
+            z-index: 10;
         }
 
 
@@ -191,7 +248,8 @@
                     rgba(10, 11, 15, .86)
                 );
 
-            border: 1px solid rgba(243, 156, 18, .35);
+            border:
+                1px solid rgba(243, 156, 18, .35);
 
             border-radius: 16px;
 
@@ -292,7 +350,8 @@
 
             background: rgba(0,0,0,.45);
 
-            border: 1px solid rgba(243,156,18,.35);
+            border:
+                1px solid rgba(243,156,18,.35);
 
             color: #ffc04d;
 
@@ -330,9 +389,14 @@
 
             color: #f5a623;
 
-            font-family: 'Cinzel', Georgia, serif;
+            font-family:
+                'Cinzel',
+                Georgia,
+                serif;
 
-            font-size: clamp(25px, 7vw, 32px);
+            font-size:
+                clamp(25px, 7vw, 32px);
+
             font-weight: 700;
 
             line-height: 1.15;
@@ -370,6 +434,7 @@
             padding: 13px 25px;
 
             border: 0;
+
             border-radius: 13px;
 
             background:
@@ -382,7 +447,9 @@
 
             color: #fff;
 
-            font-family: 'Nunito', sans-serif;
+            font-family:
+                'Nunito',
+                sans-serif;
 
             font-size: 15px;
             font-weight: 800;
@@ -401,6 +468,7 @@
 
         .action-btn:active {
             transform: scale(.95);
+
             filter: brightness(.9);
         }
 
@@ -508,7 +576,8 @@
 
             height: 2px;
 
-            border-radius: 0 0 5px 5px;
+            border-radius:
+                0 0 5px 5px;
 
             background: #f39c12;
 
@@ -519,6 +588,7 @@
 
         .nav-icon {
             font-size: 19px;
+
             line-height: 1;
         }
 
@@ -563,15 +633,6 @@
         }
 
 
-        /*
-        =========================================================
-        ФОН ЗАГРУЗКИ
-        =========================================================
-
-        Картинка увеличена, чтобы серые края
-        не были видны на экране.
-        */
-
         .loading-bg {
             position: absolute;
 
@@ -580,10 +641,13 @@
             width: 120%;
             height: 120%;
 
-            background-image: url('loading.jpg');
+            background-image:
+                url('loading.jpg');
 
             background-position: center;
+
             background-size: cover;
+
             background-repeat: no-repeat;
 
             transform: scale(1.08);
@@ -613,9 +677,11 @@
 
             z-index: 10;
 
-            width: min(88%, 380px);
+            width:
+                min(88%, 380px);
 
             display: flex;
+
             flex-direction: column;
 
             align-items: center;
@@ -628,7 +694,7 @@
 
 
         /* =========================================================
-           НАЗВАНИЕ
+           НАЗВАНИЕ ЗАГРУЗКИ
            ========================================================= */
 
         .game-title {
@@ -638,18 +704,21 @@
 
             color: #fff;
 
-            /* Сказочный шрифт */
+            /*
+             * Сказочный шрифт.
+             */
             font-family:
                 'Ruslan Display',
+                'Old English Text MT',
                 Georgia,
                 serif;
 
             font-size:
-                clamp(34px, 11vw, 54px);
+                clamp(38px, 12vw, 58px);
 
             font-weight: 400;
 
-            line-height: .98;
+            line-height: 1.02;
 
             letter-spacing: 1px;
 
@@ -706,6 +775,7 @@
                 filter: blur(5px);
             }
 
+
             to {
                 opacity: 1;
 
@@ -720,11 +790,12 @@
 
 
         /* =========================================================
-           ПРОГРЕСС
+           ЗАГРУЗЧИК
            ========================================================= */
 
         .loader-area {
             width: 100%;
+
             max-width: 280px;
 
             animation:
@@ -736,12 +807,17 @@
 
             from {
                 opacity: 0;
-                transform: translateY(10px);
+
+                transform:
+                    translateY(10px);
             }
+
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+
+                transform:
+                    translateY(0);
             }
 
         }
@@ -749,6 +825,7 @@
 
         .progress-bar-bg {
             width: 100%;
+
             height: 11px;
 
             padding: 2px;
@@ -771,6 +848,7 @@
 
         .progress-bar-fill {
             width: 0%;
+
             height: 100%;
 
             border-radius: 5px;
@@ -820,6 +898,7 @@
             .avatar {
                 width: 34px;
                 height: 34px;
+
                 font-size: 17px;
             }
 
@@ -847,12 +926,12 @@
             -webkit-touch-callout: none;
         }
 
-
     </style>
 </head>
 
 
 <body>
+
 
 <div class="app-container">
 
@@ -869,10 +948,12 @@
 
         <div class="loading-content">
 
+
             <div class="game-title">
                 Хроники<br>
                 Эльгоры
             </div>
+
 
             <div class="loader-area">
 
@@ -884,6 +965,7 @@
                     ></div>
 
                 </div>
+
 
                 <div
                     id="loading-status"
@@ -909,15 +991,20 @@
         style="background-image: url('hero.jpg');"
     >
 
+
         <header class="top-header">
 
+
             <div class="user-info">
+
 
                 <div class="avatar">
                     🛡️
                 </div>
 
+
                 <div class="username-block">
+
 
                     <span
                         class="nickname"
@@ -926,11 +1013,14 @@
                         Герой
                     </span>
 
+
                     <span class="user-lvl">
                         Уровень 1
                     </span>
 
+
                 </div>
+
 
             </div>
 
@@ -945,20 +1035,24 @@
 
             </div>
 
+
         </header>
 
 
         <div class="content-box">
 
+
             <h2 class="section-title">
                 Герой
             </h2>
+
 
             <p class="section-desc">
                 Твой отряд готов к походу
                 в подземелье и сражениям
                 с монстрами.
             </p>
+
 
             <button
                 class="action-btn"
@@ -967,7 +1061,9 @@
                 В бой
             </button>
 
+
         </div>
+
 
     </div>
 
@@ -982,45 +1078,58 @@
         style="background-image: url('hero.jpg');"
     >
 
+
         <header class="top-header">
 
+
             <div class="user-info">
+
 
                 <div class="avatar">
                     🛡️
                 </div>
 
+
                 <div class="username-block">
+
 
                     <span class="nickname">
                         Герой
                     </span>
 
+
                     <span class="user-lvl">
                         Уровень 1
                     </span>
 
+
                 </div>
 
+
             </div>
+
 
             <div class="balance-badge">
                 🪙 500
             </div>
+
 
         </header>
 
 
         <div class="content-box">
 
+
             <h2 class="section-title">
                 Город
             </h2>
+
 
             <p class="section-desc">
                 Посети таверну или кузницу
                 для улучшения снаряжения.
             </p>
+
 
             <button
                 class="action-btn"
@@ -1029,7 +1138,9 @@
                 В таверну
             </button>
 
+
         </div>
+
 
     </div>
 
@@ -1044,45 +1155,58 @@
         style="background-image: url('hero.jpg');"
     >
 
+
         <header class="top-header">
 
+
             <div class="user-info">
+
 
                 <div class="avatar">
                     ⚔️
                 </div>
 
+
                 <div class="username-block">
+
 
                     <span class="nickname">
                         Герой
                     </span>
 
+
                     <span class="user-lvl">
                         Уровень 1
                     </span>
 
+
                 </div>
 
+
             </div>
+
 
             <div class="balance-badge">
                 🪙 500
             </div>
+
 
         </header>
 
 
         <div class="content-box">
 
+
             <h2 class="section-title">
                 Арена ПвП
             </h2>
+
 
             <p class="section-desc">
                 Сражайся с другими игроками
                 за славу и сокровища.
             </p>
+
 
             <button
                 class="action-btn"
@@ -1091,7 +1215,9 @@
                 Найти бой
             </button>
 
+
         </div>
+
 
     </div>
 
@@ -1106,45 +1232,58 @@
         style="background-image: url('hero.jpg');"
     >
 
+
         <header class="top-header">
 
+
             <div class="user-info">
+
 
                 <div class="avatar">
                     🪙
                 </div>
 
+
                 <div class="username-block">
+
 
                     <span class="nickname">
                         Герой
                     </span>
 
+
                     <span class="user-lvl">
                         Уровень 1
                     </span>
 
+
                 </div>
 
+
             </div>
+
 
             <div class="balance-badge">
                 🪙 500
             </div>
+
 
         </header>
 
 
         <div class="content-box">
 
+
             <h2 class="section-title">
                 Магазин
             </h2>
+
 
             <p class="section-desc">
                 Редкие зелья, свинки и
                 артефакты для отряда.
             </p>
+
 
             <button
                 class="action-btn"
@@ -1153,7 +1292,9 @@
                 Купить
             </button>
 
+
         </div>
+
 
     </div>
 
@@ -1168,45 +1309,58 @@
         style="background-image: url('hero.jpg');"
     >
 
+
         <header class="top-header">
 
+
             <div class="user-info">
+
 
                 <div class="avatar">
                     👥
                 </div>
 
+
                 <div class="username-block">
+
 
                     <span class="nickname">
                         Герой
                     </span>
 
+
                     <span class="user-lvl">
                         Уровень 1
                     </span>
 
+
                 </div>
 
+
             </div>
+
 
             <div class="balance-badge">
                 🪙 500
             </div>
+
 
         </header>
 
 
         <div class="content-box">
 
+
             <h2 class="section-title">
                 Друзья
             </h2>
+
 
             <p class="section-desc">
                 Приглашай соратников и
                 получайте бонусы вместе.
             </p>
+
 
             <button
                 class="action-btn"
@@ -1215,7 +1369,9 @@
                 Пригласить
             </button>
 
+
         </div>
+
 
     </div>
 
@@ -1230,45 +1386,58 @@
         style="background-image: url('hero.jpg');"
     >
 
+
         <header class="top-header">
 
+
             <div class="user-info">
+
 
                 <div class="avatar">
                     ⚙️
                 </div>
 
+
                 <div class="username-block">
+
 
                     <span class="nickname">
                         Герой
                     </span>
 
+
                     <span class="user-lvl">
                         Уровень 1
                     </span>
 
+
                 </div>
 
+
             </div>
+
 
             <div class="balance-badge">
                 🪙 500
             </div>
+
 
         </header>
 
 
         <div class="content-box">
 
+
             <h2 class="section-title">
                 Настройки
             </h2>
+
 
             <p class="section-desc">
                 Управление звуком, музыкой
                 и игровыми данными.
             </p>
+
 
             <button
                 class="action-btn"
@@ -1277,13 +1446,15 @@
                 Сохранить
             </button>
 
+
         </div>
+
 
     </div>
 
 
     <!-- =========================================================
-         МЕНЮ
+         НИЖНЕЕ МЕНЮ
          ========================================================= -->
 
     <nav
@@ -1291,12 +1462,20 @@
         class="nav-bar"
     >
 
+
         <div
             class="nav-item active"
             onclick="switchTab('hero', this)"
         >
-            <div class="nav-icon">🛡️</div>
-            <div class="nav-label">Герой</div>
+
+            <div class="nav-icon">
+                🛡️
+            </div>
+
+            <div class="nav-label">
+                Герой
+            </div>
+
         </div>
 
 
@@ -1304,8 +1483,15 @@
             class="nav-item"
             onclick="switchTab('city', this)"
         >
-            <div class="nav-icon">🏰</div>
-            <div class="nav-label">Город</div>
+
+            <div class="nav-icon">
+                🏰
+            </div>
+
+            <div class="nav-label">
+                Город
+            </div>
+
         </div>
 
 
@@ -1313,8 +1499,15 @@
             class="nav-item"
             onclick="switchTab('pvp', this)"
         >
-            <div class="nav-icon">⚔️</div>
-            <div class="nav-label">ПвП</div>
+
+            <div class="nav-icon">
+                ⚔️
+            </div>
+
+            <div class="nav-label">
+                ПвП
+            </div>
+
         </div>
 
 
@@ -1322,8 +1515,15 @@
             class="nav-item"
             onclick="switchTab('shop', this)"
         >
-            <div class="nav-icon">🪙</div>
-            <div class="nav-label">Магазин</div>
+
+            <div class="nav-icon">
+                🪙
+            </div>
+
+            <div class="nav-label">
+                Магазин
+            </div>
+
         </div>
 
 
@@ -1331,8 +1531,15 @@
             class="nav-item"
             onclick="switchTab('friends', this)"
         >
-            <div class="nav-icon">👥</div>
-            <div class="nav-label">Друзья</div>
+
+            <div class="nav-icon">
+                👥
+            </div>
+
+            <div class="nav-label">
+                Друзья
+            </div>
+
         </div>
 
 
@@ -1340,9 +1547,17 @@
             class="nav-item"
             onclick="switchTab('settings', this)"
         >
-            <div class="nav-icon">⚙️</div>
-            <div class="nav-label">Настройки</div>
+
+            <div class="nav-icon">
+                ⚙️
+            </div>
+
+            <div class="nav-label">
+                Настройки
+            </div>
+
         </div>
+
 
     </nav>
 
@@ -1352,9 +1567,11 @@
 
 <script>
 
+
     /* =========================================================
        TELEGRAM
        ========================================================= */
+
 
     const tg =
         window.Telegram?.WebApp;
@@ -1362,19 +1579,25 @@
 
     if (tg) {
 
+
         tg.ready();
+
 
         tg.expand();
 
+
         try {
+
 
             tg.setHeaderColor(
                 '#08090d'
             );
 
+
             tg.setBackgroundColor(
                 '#08090d'
             );
+
 
         } catch (e) {}
 
@@ -1382,8 +1605,9 @@
 
 
     /* =========================================================
-       ИМЯ TELEGRAM
+       ИМЯ ПОЛЬЗОВАТЕЛЯ TELEGRAM
        ========================================================= */
+
 
     if (
         tg &&
@@ -1391,8 +1615,10 @@
         tg.initDataUnsafe.user
     ) {
 
+
         const user =
             tg.initDataUnsafe.user;
+
 
         const userName =
             user.first_name;
@@ -1400,14 +1626,18 @@
 
         if (userName) {
 
+
             document
                 .querySelectorAll('.nickname')
                 .forEach(function(el) {
 
+
                     el.textContent =
                         userName;
 
+
                 });
+
 
         }
 
@@ -1417,6 +1647,7 @@
     /* =========================================================
        ЗАГРУЗКА
        ========================================================= */
+
 
     let progress = 0;
 
@@ -1448,6 +1679,7 @@
     const loadingInterval =
         setInterval(function() {
 
+
             progress +=
                 Math.floor(
                     Math.random() * 6
@@ -1456,13 +1688,17 @@
 
             if (progress >= 100) {
 
+
                 progress = 100;
+
 
                 clearInterval(
                     loadingInterval
                 );
 
+
                 finishLoading();
+
 
             }
 
@@ -1482,13 +1718,16 @@
 
     function finishLoading() {
 
+
         setTimeout(function() {
+
 
             loadingScreen.style.opacity =
                 '0';
 
 
             setTimeout(function() {
+
 
                 loadingScreen.style.display =
                     'none';
@@ -1513,18 +1752,22 @@
 
 
     /* =========================================================
-       ЭКРАНЫ
+       ПОКАЗ ЭКРАНА
        ========================================================= */
 
+
     function showScreen(tabName) {
+
 
         document
             .querySelectorAll('.screen')
             .forEach(function(screen) {
 
+
                 screen.classList.remove(
                     'active'
                 );
+
 
             });
 
@@ -1537,9 +1780,11 @@
 
         if (target) {
 
+
             target.classList.add(
                 'active'
             );
+
 
         }
 
@@ -1547,33 +1792,41 @@
 
 
     /* =========================================================
-       МЕНЮ
+       ПЕРЕКЛЮЧЕНИЕ МЕНЮ
        ========================================================= */
+
 
     function switchTab(
         tabName,
         element
     ) {
 
-        showScreen(tabName);
+
+        showScreen(
+            tabName
+        );
 
 
         document
             .querySelectorAll('.nav-item')
             .forEach(function(item) {
 
+
                 item.classList.remove(
                     'active'
                 );
+
 
             });
 
 
         if (element) {
 
+
             element.classList.add(
                 'active'
             );
+
 
         }
 
@@ -1581,41 +1834,57 @@
 
 
     /* =========================================================
-       КНОПКИ
+       ДЕЙСТВИЯ КНОПОК
        ========================================================= */
 
+
     function gameAction(message) {
+
 
         if (
             tg &&
             tg.showPopup
         ) {
 
+
             tg.showPopup({
+
 
                 title:
                     'Хроники Эльгоры',
 
+
                 message:
                     message,
 
+
                 buttons: [
+
                     {
                         type: 'ok'
                     }
+
                 ]
+
 
             });
 
+
         } else {
 
-            alert(message);
+
+            alert(
+                message
+            );
+
 
         }
 
     }
 
+
 </script>
+
 
 </body>
 </html>
