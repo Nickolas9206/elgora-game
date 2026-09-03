@@ -17,38 +17,23 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Общий фон окна Telegram */
         html, body {
             width: 100%;
             height: 100%;
-            background: #111216;
+            background: #08090d;
             color: #fff;
             overflow: hidden;
             font-family: 'Nunito', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        /* Центрированная мобильная «карточка» для десктопа и адаптив для телефонов */
         .app-container {
             position: relative;
             width: 100%;
-            max-width: 440px;
             height: 100%;
-            max-height: 920px;
             background: #08090d;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
-        }
-
-        @media (min-width: 441px) {
-            .app-container {
-                border-radius: 24px;
-                border: 1px solid rgba(243, 156, 18, 0.2);
-            }
         }
 
         .screen {
@@ -81,7 +66,7 @@
             position: fixed;
             inset: 0;
             z-index: 1;
-            background: linear-gradient(180deg, rgba(4, 5, 8, .6) 0%, rgba(4, 5, 8, .75) 60%, rgba(4, 5, 8, .92) 100%);
+            background: linear-gradient(180deg, rgba(4, 5, 8, .65) 0%, rgba(4, 5, 8, .8) 60%, rgba(4, 5, 8, .95) 100%);
             pointer-events: none;
         }
 
@@ -90,9 +75,9 @@
             z-index: 10;
         }
 
-        /* Шапка профиля */
         .top-header {
             width: 100%;
+            max-width: 600px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -134,7 +119,7 @@
         }
 
         .nickname {
-            max-width: 130px;
+            max-width: 150px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -169,6 +154,7 @@
 
         .content-box {
             width: 100%;
+            max-width: 600px;
             margin: auto 0;
             display: flex;
             flex-direction: column;
@@ -181,30 +167,30 @@
             margin-bottom: 10px;
             color: #f5a623;
             font-family: 'Cinzel', Georgia, serif;
-            font-size: clamp(24px, 6vw, 32px);
+            font-size: clamp(26px, 6vw, 36px);
             font-weight: 700;
             text-shadow: 0 3px 8px rgba(0,0,0,.9), 0 0 15px rgba(243,156,18,.3);
         }
 
         .section-desc {
-            max-width: 300px;
-            margin-bottom: 20px;
+            max-width: 340px;
+            margin-bottom: 24px;
             color: #e1e5ea;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             line-height: 1.4;
             text-shadow: 0 2px 4px rgba(0,0,0,.9);
         }
 
         .action-btn {
-            min-width: 140px;
-            padding: 12px 24px;
+            min-width: 160px;
+            padding: 14px 28px;
             border: 0;
             border-radius: 12px;
             background: linear-gradient(135deg, #ffb52e 0%, #f39c12 45%, #d35400 100%);
             color: #fff;
             font-family: 'Nunito', sans-serif;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 800;
             cursor: pointer;
             box-shadow: 0 5px 18px rgba(243,156,18,.4), inset 0 1px 0 rgba(255,255,255,.25);
@@ -216,7 +202,6 @@
             filter: brightness(.9);
         }
 
-        /* Нижнее меню */
         .nav-bar {
             position: absolute;
             z-index: 100;
@@ -283,7 +268,6 @@
             color: #f39c12;
         }
 
-        /* Экран загрузки */
         #loading-screen {
             position: absolute;
             inset: 0;
@@ -375,27 +359,20 @@
 
 <div class="app-container">
 
-    <!-- ЗАГРУЗКА -->
     <div id="loading-screen">
         <div class="loading-bg"></div>
         <div class="loading-overlay"></div>
         <div class="loading-content">
-            <div class="game-title">
-                Хроники<br>
-                Эльгоры
-            </div>
+            <div class="game-title">Хроники<br>Эльгоры</div>
             <div class="loader-area">
                 <div class="progress-bar-bg">
                     <div id="progress-fill" class="progress-bar-fill"></div>
                 </div>
-                <div id="loading-status" class="loading-text">
-                    Загрузка мира... 0%
-                </div>
+                <div id="loading-status" class="loading-text">Загрузка мира... 0%</div>
             </div>
         </div>
     </div>
 
-    <!-- ГЕРОЙ -->
     <div id="screen-hero" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
             <div class="user-info">
@@ -405,9 +382,7 @@
                     <span class="user-lvl">Уровень 1</span>
                 </div>
             </div>
-            <div class="balance-badge">
-                🪙 <span id="gold-count">500</span>
-            </div>
+            <div class="balance-badge">🪙 <span id="gold-count">500</span></div>
         </header>
         <div class="content-box">
             <h2 class="section-title">Герой</h2>
@@ -416,7 +391,6 @@
         </div>
     </div>
 
-    <!-- ГОРОД -->
     <div id="screen-city" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
             <div class="user-info">
@@ -435,7 +409,6 @@
         </div>
     </div>
 
-    <!-- ПВП -->
     <div id="screen-pvp" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
             <div class="user-info">
@@ -454,7 +427,6 @@
         </div>
     </div>
 
-    <!-- МАГАЗИН -->
     <div id="screen-shop" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
             <div class="user-info">
@@ -473,7 +445,6 @@
         </div>
     </div>
 
-    <!-- ДРУЗЬЯ -->
     <div id="screen-friends" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
             <div class="user-info">
@@ -492,7 +463,6 @@
         </div>
     </div>
 
-    <!-- НАСТРОЙКИ -->
     <div id="screen-settings" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
             <div class="user-info">
@@ -511,7 +481,6 @@
         </div>
     </div>
 
-    <!-- НИЖНЕЕ МЕНЮ -->
     <nav id="nav-bar" class="nav-bar">
         <div class="nav-item active" onclick="switchTab('hero', this)">
             <div class="nav-icon">🛡️</div>
@@ -548,8 +517,8 @@
         tg.ready();
         tg.expand();
         try {
-            tg.setHeaderColor('#111216');
-            tg.setBackgroundColor('#111216');
+            tg.setHeaderColor('#08090d');
+            tg.setBackgroundColor('#08090d');
         } catch (e) {}
     }
 
@@ -578,7 +547,7 @@
         }
         fill.style.width = progress + '%';
         statusText.textContent = 'Загрузка мира... ' + progress + '%';
-    }, 50);
+    }, 40);
 
     function finishLoading() {
         setTimeout(function() {
