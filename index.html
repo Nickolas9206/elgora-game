@@ -1,1695 +1,619 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Хроники Эльгоры</title>
-
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <style>
-
-        /* =========================================================
-           ШРИФТЫ
-           ========================================================= */
-
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Nunito:wght@600;700;800&display=swap');
-
-
-        /* =========================================================
-           RESET
-           ========================================================= */
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Ruslan+Display&display=swap');
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-
             -webkit-user-select: none;
             user-select: none;
-
             -webkit-tap-highlight-color: transparent;
         }
 
-
-        html {
-            width: 100%;
-            height: 100%;
-
-            background: #08090d;
-
-            overflow: hidden;
-        }
-
-
-        body {
-            width: 100%;
-            height: 100%;
-
-            margin: 0;
-            padding: 0;
-
+        /* Жестко растягиваем на весь экран без серых полей */
+        html, body {
+            width: 100vw;
+            height: 100vh;
             background: #08090d;
             color: #fff;
-
             overflow: hidden;
-
             font-family: 'Nunito', sans-serif;
-
             position: fixed;
-            inset: 0;
-
-            touch-action: manipulation;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
-
-
-        /* =========================================================
-           ОСНОВА
-           ========================================================= */
 
         .app-container {
-            position: fixed;
-            inset: 0;
-
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-
             overflow: hidden;
-
             background: #08090d;
         }
-
-
-        /* =========================================================
-           ЭКРАНЫ
-           ========================================================= */
 
         .screen {
             position: absolute;
             inset: 0;
-
             width: 100%;
             height: 100%;
-
             display: none;
-
             flex-direction: column;
             align-items: center;
-
             overflow: hidden;
-
             text-align: center;
-
-            padding-top:
-                calc(10px + env(safe-area-inset-top));
-
-            padding-left:
-                calc(12px + env(safe-area-inset-left));
-
-            padding-right:
-                calc(12px + env(safe-area-inset-right));
-
-            padding-bottom:
-                calc(76px + env(safe-area-inset-bottom));
-
-            /*
-             * Увеличиваем фон немного больше экрана.
-             * Это предотвращает появление серых/пустых полос
-             * из-за пропорций изображения.
-             */
+            padding-top: calc(12px + env(safe-area-inset-top));
+            padding-left: 12px;
+            padding-right: 12px;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
             background-position: center center;
             background-size: cover;
             background-repeat: no-repeat;
-
+            background-color: #08090d;
             opacity: 0;
-
             transition: opacity .25s ease;
         }
-
 
         .screen.active {
             display: flex;
             opacity: 1;
         }
 
-
-        /* =========================================================
-           ЗАТЕМНЕНИЕ ИГРОВОЙ СЦЕНЫ
-           ========================================================= */
-
         .screen::before {
             content: "";
-
             position: absolute;
             inset: 0;
-
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(4, 5, 8, .18) 0%,
-                    rgba(4, 5, 8, .30) 45%,
-                    rgba(4, 5, 8, .72) 100%
-                );
-
             z-index: 1;
-
+            background: linear-gradient(180deg, rgba(4, 5, 8, .35) 0%, rgba(4, 5, 8, .55) 60%, rgba(4, 5, 8, .88) 100%);
             pointer-events: none;
         }
 
-
-        /* =========================================================
-           ВЕРХНИЙ ПРОФИЛЬ
-           ========================================================= */
-
-        .top-header {
+        .screen > * {
             position: relative;
-
             z-index: 10;
-
-            flex-shrink: 0;
-
-            width: 100%;
-            max-width: 420px;
-
-            min-height: 58px;
-
-            display: flex;
-
-            justify-content: space-between;
-            align-items: center;
-
-            padding: 7px 9px;
-
-            margin-top: 2px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(18, 19, 25, .90),
-                    rgba(10, 11, 15, .78)
-                );
-
-            border: 1px solid rgba(243, 156, 18, .30);
-
-            border-radius: 16px;
-
-            box-shadow:
-                0 6px 22px rgba(0,0,0,.28),
-                inset 0 1px 0 rgba(255,255,255,.04);
-
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
         }
 
+        /* Шапка встроена внутрь экрана, ровно по ширине контента */
+        .top-header {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: linear-gradient(135deg, rgba(18, 19, 25, .92), rgba(10, 11, 15, .88));
+            border: 1px solid rgba(243, 156, 18, .35);
+            border-radius: 16px;
+            box-shadow: 0 6px 24px rgba(0,0,0,.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            margin-bottom: auto;
+        }
 
         .user-info {
             display: flex;
             align-items: center;
-
-            gap: 9px;
-
-            min-width: 0;
+            gap: 10px;
         }
-
 
         .avatar {
             width: 38px;
             height: 38px;
-
             flex-shrink: 0;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
-            border-radius: 11px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #f39c12,
-                    #d35400
-                );
-
-            box-shadow:
-                0 3px 12px rgba(243,156,18,.25);
-
-            font-size: 19px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f39c12, #d35400);
+            box-shadow: 0 3px 10px rgba(243,156,18,.3);
+            font-size: 18px;
         }
-
 
         .username-block {
             display: flex;
             flex-direction: column;
-
             align-items: flex-start;
-
             gap: 2px;
-
-            min-width: 0;
         }
-
 
         .nickname {
             max-width: 150px;
-
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-
             color: #fff;
-
             font-size: 14px;
             font-weight: 800;
+            line-height: 1.1;
         }
-
 
         .user-lvl {
-            padding: 2px 6px;
-
-            border-radius: 5px;
-
-            background: rgba(243,156,18,.15);
-
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: rgba(243,156,18,.2);
             color: #f5ad35;
-
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 800;
         }
-
-
-        /* =========================================================
-           ЗОЛОТО
-           ========================================================= */
 
         .balance-badge {
             display: flex;
             align-items: center;
-
             gap: 5px;
-
-            flex-shrink: 0;
-
-            padding: 7px 10px;
-
-            border-radius: 12px;
-
-            background: rgba(0,0,0,.40);
-
-            border: 1px solid rgba(243,156,18,.32);
-
+            padding: 6px 10px;
+            border-radius: 10px;
+            background: rgba(0,0,0,.5);
+            border: 1px solid rgba(243,156,18,.35);
             color: #ffc04d;
-
             font-size: 13px;
             font-weight: 800;
         }
 
-
-        /* =========================================================
-           ЦЕНТРАЛЬНАЯ ОБЛАСТЬ
-           ========================================================= */
-
         .content-box {
-            position: relative;
-
-            z-index: 5;
-
             width: 100%;
             max-width: 420px;
-
-            flex: 1;
-
-            min-height: 0;
-
+            margin: auto 0;
             display: flex;
             flex-direction: column;
-
             align-items: center;
             justify-content: center;
-
-            padding:
-                20px 10px
-                calc(10px + env(safe-area-inset-bottom));
+            padding: 10px 0;
         }
-
 
         .section-title {
             margin-bottom: 10px;
-
             color: #f5a623;
-
             font-family: 'Cinzel', Georgia, serif;
-
-            font-size: clamp(25px, 7vw, 32px);
+            font-size: clamp(26px, 7vw, 34px);
             font-weight: 700;
-
-            line-height: 1.15;
-
-            text-shadow:
-                0 3px 8px rgba(0,0,0,.95),
-                0 0 18px rgba(243,156,18,.30);
+            text-shadow: 0 3px 8px rgba(0,0,0,.9), 0 0 15px rgba(243,156,18,.3);
         }
-
 
         .section-desc {
-            max-width: 340px;
-
+            max-width: 320px;
             margin-bottom: 20px;
-
-            color: #f0f2f4;
-
+            color: #e1e5ea;
             font-size: 14px;
-            font-weight: 700;
-
-            line-height: 1.5;
-
-            text-shadow:
-                0 2px 6px rgba(0,0,0,1);
+            font-weight: 600;
+            line-height: 1.4;
+            text-shadow: 0 2px 4px rgba(0,0,0,.9);
         }
-
-
-        /* =========================================================
-           КНОПКИ
-           ========================================================= */
 
         .action-btn {
             min-width: 150px;
-
-            padding: 13px 25px;
-
+            padding: 12px 24px;
             border: 0;
-            border-radius: 13px;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #ffb52e 0%,
-                    #f39c12 45%,
-                    #d35400 100%
-                );
-
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffb52e 0%, #f39c12 45%, #d35400 100%);
             color: #fff;
-
             font-family: 'Nunito', sans-serif;
-
             font-size: 15px;
             font-weight: 800;
-
             cursor: pointer;
-
-            -webkit-appearance: none;
-            appearance: none;
-
-            box-shadow:
-                0 5px 18px rgba(243,156,18,.35),
-                inset 0 1px 0 rgba(255,255,255,.25);
-
-            transition:
-                transform .12s ease,
-                filter .12s ease;
+            box-shadow: 0 5px 18px rgba(243,156,18,.4), inset 0 1px 0 rgba(255,255,255,.25);
+            transition: transform .1s ease, filter .1s ease;
         }
-
 
         .action-btn:active {
             transform: scale(.95);
             filter: brightness(.9);
         }
 
-
-        .action-btn:focus {
-            outline: none;
-        }
-
-
-        /* =========================================================
-           НИЖНЕЕ МЕНЮ
-           ========================================================= */
-
+        /* Нижнее меню */
         .nav-bar {
             position: absolute;
-
             z-index: 100;
-
             left: 0;
             right: 0;
             bottom: 0;
-
             width: 100%;
-
             height: 70px;
-
-            padding:
-                4px
-                max(5px, env(safe-area-inset-left))
-                calc(4px + env(safe-area-inset-bottom))
-                max(5px, env(safe-area-inset-right));
-
+            padding: 0 4px calc(env(safe-area-inset-bottom));
             display: none;
-
             justify-content: space-around;
-            align-items: stretch;
-
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(15,16,21,.90),
-                    rgba(9,10,14,.98)
-                );
-
-            border-top:
-                1px solid rgba(243,156,18,.28);
-
-            box-shadow:
-                0 -10px 30px rgba(0,0,0,.40);
-
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            align-items: center;
+            background: linear-gradient(180deg, rgba(15,16,21,.94), rgba(8,9,13,.99));
+            border-top: 1px solid rgba(243,156,18,.25);
+            box-shadow: 0 -8px 25px rgba(0,0,0,.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
-
 
         .nav-bar.visible {
             display: flex;
         }
 
-
         .nav-item {
             position: relative;
-
             flex: 1;
-
-            min-width: 0;
-
+            height: 100%;
             display: flex;
             flex-direction: column;
-
             align-items: center;
             justify-content: center;
-
-            gap: 3px;
-
-            border-radius: 10px;
-
+            gap: 2px;
             cursor: pointer;
-
-            transition:
-                background .15s ease,
-                transform .15s ease;
         }
-
-
-        .nav-item:active {
-            transform: scale(.92);
-        }
-
 
         .nav-item.active {
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(243,156,18,.14),
-                    rgba(243,156,18,.04)
-                );
+            background: linear-gradient(180deg, rgba(243,156,18,.12), rgba(243,156,18,.02));
         }
-
 
         .nav-item.active::before {
             content: "";
-
             position: absolute;
-
-            top: -4px;
-
-            left: 22%;
-            right: 22%;
-
-            height: 2px;
-
-            border-radius: 0 0 5px 5px;
-
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            border-radius: 0 0 3px 3px;
             background: #f39c12;
-
-            box-shadow:
-                0 0 10px rgba(243,156,18,.7);
+            box-shadow: 0 0 8px rgba(243,156,18,.8);
         }
 
-
         .nav-icon {
-            font-size: 19px;
+            font-size: 18px;
             line-height: 1;
         }
 
-
         .nav-label {
             color: #87919c;
-
             font-size: 9px;
             font-weight: 800;
         }
-
 
         .nav-item.active .nav-label {
             color: #f39c12;
         }
 
-
-        /* =========================================================
-           ЗАГРУЗОЧНЫЙ ЭКРАН
-           ========================================================= */
-
         #loading-screen {
             position: fixed;
             inset: 0;
-
             z-index: 1000;
-
             width: 100%;
             height: 100%;
-
             display: flex;
-
             align-items: center;
             justify-content: center;
-
             overflow: hidden;
-
             background: #08090d;
-
-            transition:
-                opacity .5s ease;
+            transition: opacity .4s ease;
         }
-
 
         .loading-bg {
             position: absolute;
-
             inset: -10%;
-
             width: 120%;
             height: 120%;
-
+            background-color: #08090d;
             background-image: url('loading.jpg');
-
             background-position: center;
             background-size: cover;
             background-repeat: no-repeat;
-
-            transform: scale(1.08);
-
+            transform: scale(1.05);
             z-index: 1;
         }
 
-
         .loading-overlay {
             position: absolute;
-
             inset: 0;
-
             z-index: 2;
-
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(5,6,9,.25),
-                    rgba(5,6,9,.62)
-                );
+            background: linear-gradient(180deg, rgba(5,6,9,.2), rgba(5,6,9,.6));
         }
-
 
         .loading-content {
             position: relative;
-
             z-index: 10;
-
-            width: min(88%, 380px);
-
+            width: min(90%, 340px);
             display: flex;
             flex-direction: column;
-
             align-items: center;
-
-            padding:
-                calc(20px + env(safe-area-inset-top))
-                0
-                calc(20px + env(safe-area-inset-bottom));
         }
-
-
-        /* =========================================================
-           НАЗВАНИЕ
-           ========================================================= */
 
         .game-title {
             position: relative;
-
-            margin-bottom: 32px;
-
+            margin-bottom: 30px;
             color: #fff;
-
-            font-family:
-                'Cinzel',
-                Georgia,
-                serif;
-
-            font-size:
-                clamp(34px, 11vw, 54px);
-
-            font-weight: 700;
-
-            line-height: .98;
-
-            letter-spacing: 2px;
-
+            font-family: 'Ruslan Display', Georgia, serif;
+            font-size: clamp(38px, 11vw, 54px);
+            font-weight: 400;
+            line-height: 1.05;
             text-align: center;
-
             text-transform: uppercase;
-
-            text-shadow:
-                0 3px 0 #7a3b00,
-                0 5px 12px rgba(0,0,0,.95),
-                0 0 22px rgba(243,156,18,.45);
-
-            animation:
-                titleAppear 1.2s ease both;
+            text-shadow: 0 3px 0 #7a3b00, 0 5px 12px rgba(0,0,0,.95), 0 0 20px rgba(243,156,18,.4);
         }
-
-
-        .game-title::after {
-            content: "";
-
-            position: absolute;
-
-            left: 15%;
-            right: 15%;
-
-            bottom: -14px;
-
-            height: 2px;
-
-            background:
-                linear-gradient(
-                    90deg,
-                    transparent,
-                    #f39c12,
-                    #ffe39a,
-                    #f39c12,
-                    transparent
-                );
-
-            box-shadow:
-                0 0 10px rgba(243,156,18,.7);
-        }
-
-
-        @keyframes titleAppear {
-
-            from {
-                opacity: 0;
-
-                transform:
-                    translateY(15px)
-                    scale(.95);
-
-                filter: blur(5px);
-            }
-
-            to {
-                opacity: 1;
-
-                transform:
-                    translateY(0)
-                    scale(1);
-
-                filter: blur(0);
-            }
-
-        }
-
-
-        /* =========================================================
-           ПРОГРЕСС
-           ========================================================= */
 
         .loader-area {
             width: 100%;
-            max-width: 280px;
-
-            animation:
-                loaderAppear 1s .35s ease both;
+            max-width: 260px;
         }
-
-
-        @keyframes loaderAppear {
-
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-        }
-
 
         .progress-bar-bg {
             width: 100%;
-            height: 11px;
-
+            height: 10px;
             padding: 2px;
-
-            overflow: hidden;
-
-            border:
-                1px solid rgba(255,210,100,.55);
-
-            border-radius: 8px;
-
-            background:
-                rgba(0,0,0,.75);
-
-            box-shadow:
-                0 3px 15px rgba(0,0,0,.6),
-                inset 0 1px 3px rgba(0,0,0,.9);
+            border: 1px solid rgba(255,210,100,.5);
+            border-radius: 6px;
+            background: rgba(0,0,0,.7);
         }
-
 
         .progress-bar-fill {
             width: 0%;
             height: 100%;
-
-            border-radius: 5px;
-
-            background:
-                linear-gradient(
-                    90deg,
-                    #b94a00,
-                    #f39c12,
-                    #ffd76a
-                );
-
-            box-shadow:
-                0 0 10px rgba(243,156,18,.65);
-
-            transition:
-                width .1s linear;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #b94a00, #f39c12, #ffd76a);
+            transition: width .1s linear;
         }
-
 
         .loading-text {
-            margin-top: 11px;
-
+            margin-top: 10px;
             color: #ffe39a;
-
             font-size: 12px;
             font-weight: 700;
-
-            letter-spacing: .5px;
-
-            text-shadow:
-                0 2px 5px rgba(0,0,0,.9);
+            text-shadow: 0 2px 4px rgba(0,0,0,.9);
         }
-
-
-        /* =========================================================
-           АДАПТАЦИЯ ПОД НЕБОЛЬШИЕ ЭКРАНЫ
-           ========================================================= */
-
-        @media (max-height: 700px) {
-
-            .top-header {
-                min-height: 54px;
-                margin-top: 0;
-            }
-
-            .avatar {
-                width: 35px;
-                height: 35px;
-                font-size: 17px;
-            }
-
-            .content-box {
-                padding-top: 10px;
-                padding-bottom: 10px;
-            }
-
-            .section-title {
-                margin-bottom: 7px;
-            }
-
-            .section-desc {
-                margin-bottom: 14px;
-            }
-
-            .nav-bar {
-                height: 64px;
-            }
-
-            .nav-icon {
-                font-size: 17px;
-            }
-
-            .nav-label {
-                font-size: 8px;
-            }
-        }
-
-
-        @media (max-height: 600px) {
-
-            .top-header {
-                min-height: 50px;
-            }
-
-            .avatar {
-                width: 32px;
-                height: 32px;
-            }
-
-            .nickname {
-                font-size: 12px;
-            }
-
-            .user-lvl {
-                font-size: 8px;
-            }
-
-            .balance-badge {
-                padding: 6px 8px;
-                font-size: 12px;
-            }
-
-            .section-title {
-                font-size: 25px;
-            }
-
-            .section-desc {
-                font-size: 13px;
-                margin-bottom: 12px;
-            }
-
-            .action-btn {
-                padding: 11px 22px;
-                font-size: 14px;
-            }
-
-            .nav-bar {
-                height: 60px;
-            }
-        }
-
-
-        button,
-        .nav-item {
-            -webkit-touch-callout: none;
-        }
-
     </style>
-
 </head>
-
-
 <body>
 
 <div class="app-container">
 
-
-    <!-- =========================================================
-         ЗАГРУЗКА
-         ========================================================= -->
-
+    <!-- ЗАГРУЗКА -->
     <div id="loading-screen">
-
         <div class="loading-bg"></div>
-
         <div class="loading-overlay"></div>
-
         <div class="loading-content">
-
             <div class="game-title">
                 Хроники<br>
                 Эльгоры
             </div>
-
             <div class="loader-area">
-
                 <div class="progress-bar-bg">
-
-                    <div
-                        id="progress-fill"
-                        class="progress-bar-fill"
-                    ></div>
-
+                    <div id="progress-fill" class="progress-bar-fill"></div>
                 </div>
-
-                <div
-                    id="loading-status"
-                    class="loading-text"
-                >
+                <div id="loading-status" class="loading-text">
                     Загрузка мира... 0%
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
-
-    <!-- =========================================================
-         ГЕРОЙ
-         ========================================================= -->
-
-    <div
-        id="screen-hero"
-        class="screen active"
-        style="background-image: url('hero.jpg');"
-    >
-
+    <!-- ГЕРОЙ -->
+    <div id="screen-hero" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
-
             <div class="user-info">
-
-                <div class="avatar">
-                    🛡️
-                </div>
-
+                <div class="avatar">🛡️</div>
                 <div class="username-block">
-
-                    <span
-                        class="nickname"
-                        id="user-nickname"
-                    >
-                        Герой
-                    </span>
-
-                    <span class="user-lvl">
-                        Уровень 1
-                    </span>
-
+                    <span class="nickname" id="user-nickname">Герой</span>
+                    <span class="user-lvl">Уровень 1</span>
                 </div>
-
             </div>
-
-
             <div class="balance-badge">
-
-                🪙
-
-                <span id="gold-count">
-                    500
-                </span>
-
+                🪙 <span id="gold-count">500</span>
             </div>
-
         </header>
-
-
         <div class="content-box">
-
-            <h2 class="section-title">
-                Герой
-            </h2>
-
-            <p class="section-desc">
-                Твой отряд готов к походу
-                в подземелье и сражениям
-                с монстрами.
-            </p>
-
-            <button
-                type="button"
-                class="action-btn"
-                onclick="gameAction('В бой!')"
-            >
-                В бой
-            </button>
-
+            <h2 class="section-title">Герой</h2>
+            <p class="section-desc">Твой отряд готов к походу в подземелье и сражениям с монстрами.</p>
+            <button class="action-btn" onclick="gameAction('В бой!')">В бой</button>
         </div>
-
     </div>
 
-
-    <!-- =========================================================
-         ГОРОД
-         ========================================================= -->
-
-    <div
-        id="screen-city"
-        class="screen"
-        style="background-image: url('hero.jpg');"
-    >
-
+    <!-- ГОРОД -->
+    <div id="screen-city" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
-
             <div class="user-info">
-
-                <div class="avatar">
-                    🛡️
-                </div>
-
+                <div class="avatar">🛡️</div>
                 <div class="username-block">
-
-                    <span class="nickname">
-                        Герой
-                    </span>
-
-                    <span class="user-lvl">
-                        Уровень 1
-                    </span>
-
+                    <span class="nickname">Герой</span>
+                    <span class="user-lvl">Уровень 1</span>
                 </div>
-
             </div>
-
-            <div class="balance-badge">
-                🪙 500
-            </div>
-
+            <div class="balance-badge">🪙 500</div>
         </header>
-
-
         <div class="content-box">
-
-            <h2 class="section-title">
-                Город
-            </h2>
-
-            <p class="section-desc">
-                Посети таверну или кузницу
-                для улучшения снаряжения.
-            </p>
-
-            <button
-                type="button"
-                class="action-btn"
-                onclick="gameAction('В таверну')"
-            >
-                В таверну
-            </button>
-
+            <h2 class="section-title">Город</h2>
+            <p class="section-desc">Посети таверну или кузницу для улучшения снаряжения.</p>
+            <button class="action-btn" onclick="gameAction('В таверну')">В таверну</button>
         </div>
-
     </div>
 
-
-    <!-- =========================================================
-         ПВП
-         ========================================================= -->
-
-    <div
-        id="screen-pvp"
-        class="screen"
-        style="background-image: url('hero.jpg');"
-    >
-
+    <!-- ПВП -->
+    <div id="screen-pvp" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
-
             <div class="user-info">
-
-                <div class="avatar">
-                    ⚔️
-                </div>
-
+                <div class="avatar">⚔️</div>
                 <div class="username-block">
-
-                    <span class="nickname">
-                        Герой
-                    </span>
-
-                    <span class="user-lvl">
-                        Уровень 1
-                    </span>
-
+                    <span class="nickname">Герой</span>
+                    <span class="user-lvl">Уровень 1</span>
                 </div>
-
             </div>
-
-            <div class="balance-badge">
-                🪙 500
-            </div>
-
+            <div class="balance-badge">🪙 500</div>
         </header>
-
-
         <div class="content-box">
-
-            <h2 class="section-title">
-                Арена ПвП
-            </h2>
-
-            <p class="section-desc">
-                Сражайся с другими игроками
-                за славу и сокровища.
-            </p>
-
-            <button
-                type="button"
-                class="action-btn"
-                onclick="gameAction('Поиск бойца...')"
-            >
-                Найти бой
-            </button>
-
+            <h2 class="section-title">Арена ПвП</h2>
+            <p class="section-desc">Сражайся с другими игроками за славу и сокровища.</p>
+            <button class="action-btn" onclick="gameAction('Поиск бойца...')">Найти бой</button>
         </div>
-
     </div>
 
-
-    <!-- =========================================================
-         МАГАЗИН
-         ========================================================= -->
-
-    <div
-        id="screen-shop"
-        class="screen"
-        style="background-image: url('hero.jpg');"
-    >
-
+    <!-- МАГАЗИН -->
+    <div id="screen-shop" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
-
             <div class="user-info">
-
-                <div class="avatar">
-                    🪙
-                </div>
-
+                <div class="avatar">🪙</div>
                 <div class="username-block">
-
-                    <span class="nickname">
-                        Герой
-                    </span>
-
-                    <span class="user-lvl">
-                        Уровень 1
-                    </span>
-
+                    <span class="nickname">Герой</span>
+                    <span class="user-lvl">Уровень 1</span>
                 </div>
-
             </div>
-
-            <div class="balance-badge">
-                🪙 500
-            </div>
-
+            <div class="balance-badge">🪙 500</div>
         </header>
-
-
         <div class="content-box">
-
-            <h2 class="section-title">
-                Магазин
-            </h2>
-
-            <p class="section-desc">
-                Редкие зелья, свинки и
-                артефакты для отряда.
-            </p>
-
-            <button
-                type="button"
-                class="action-btn"
-                onclick="gameAction('Магазин')"
-            >
-                Купить
-            </button>
-
+            <h2 class="section-title">Магазин</h2>
+            <p class="section-desc">Редкие зелья, свитки и артефакты для отряда.</p>
+            <button class="action-btn" onclick="gameAction('Магазин')">Купить</button>
         </div>
-
     </div>
 
-
-    <!-- =========================================================
-         ДРУЗЬЯ
-         ========================================================= -->
-
-    <div
-        id="screen-friends"
-        class="screen"
-        style="background-image: url('hero.jpg');"
-    >
-
+    <!-- ДРУЗЬЯ -->
+    <div id="screen-friends" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
-
             <div class="user-info">
-
-                <div class="avatar">
-                    👥
-                </div>
-
+                <div class="avatar">👥</div>
                 <div class="username-block">
-
-                    <span class="nickname">
-                        Герой
-                    </span>
-
-                    <span class="user-lvl">
-                        Уровень 1
-                    </span>
-
+                    <span class="nickname">Герой</span>
+                    <span class="user-lvl">Уровень 1</span>
                 </div>
-
             </div>
-
-            <div class="balance-badge">
-                🪙 500
-            </div>
-
+            <div class="balance-badge">🪙 500</div>
         </header>
-
-
         <div class="content-box">
-
-            <h2 class="section-title">
-                Друзья
-            </h2>
-
-            <p class="section-desc">
-                Приглашай соратников и
-                получайте бонусы вместе.
-            </p>
-
-            <button
-                type="button"
-                class="action-btn"
-                onclick="gameAction('Ссылка скопирована')"
-            >
-                Пригласить
-            </button>
-
+            <h2 class="section-title">Друзья</h2>
+            <p class="section-desc">Приглашай соратников и получайте бонусы вместе.</p>
+            <button class="action-btn" onclick="gameAction('Ссылка скопирована')">Пригласить</button>
         </div>
-
     </div>
 
-
-    <!-- =========================================================
-         НАСТРОЙКИ
-         ========================================================= -->
-
-    <div
-        id="screen-settings"
-        class="screen"
-        style="background-image: url('hero.jpg');"
-    >
-
+    <!-- НАСТРОЙКИ -->
+    <div id="screen-settings" class="screen" style="background-image: url('hero.jpg');">
         <header class="top-header">
-
             <div class="user-info">
-
-                <div class="avatar">
-                    ⚙️
-                </div>
-
+                <div class="avatar">⚙️</div>
                 <div class="username-block">
-
-                    <span class="nickname">
-                        Герой
-                    </span>
-
-                    <span class="user-lvl">
-                        Уровень 1
-                    </span>
-
+                    <span class="nickname">Герой</span>
+                    <span class="user-lvl">Уровень 1</span>
                 </div>
-
             </div>
-
-            <div class="balance-badge">
-                🪙 500
-            </div>
-
+            <div class="balance-badge">🪙 500</div>
         </header>
-
-
         <div class="content-box">
-
-            <h2 class="section-title">
-                Настройки
-            </h2>
-
-            <p class="section-desc">
-                Управление звуком, музыкой
-                и игровыми данными.
-            </p>
-
-            <button
-                type="button"
-                class="action-btn"
-                onclick="gameAction('Сохранено')"
-            >
-                Сохранить
-            </button>
-
+            <h2 class="section-title">Настройки</h2>
+            <p class="section-desc">Управление звуком, музыкой и игровыми данными.</p>
+            <button class="action-btn" onclick="gameAction('Сохранено')">Сохранить</button>
         </div>
-
     </div>
 
-
-    <!-- =========================================================
-         НИЖНЕЕ МЕНЮ
-         ========================================================= -->
-
-    <nav
-        id="nav-bar"
-        class="nav-bar"
-    >
-
-        <div
-            class="nav-item active"
-            onclick="switchTab('hero', this)"
-        >
+    <!-- НИЖНЕЕ МЕНЮ -->
+    <nav id="nav-bar" class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('hero', this)">
             <div class="nav-icon">🛡️</div>
             <div class="nav-label">Герой</div>
         </div>
-
-
-        <div
-            class="nav-item"
-            onclick="switchTab('city', this)"
-        >
+        <div class="nav-item" onclick="switchTab('city', this)">
             <div class="nav-icon">🏰</div>
             <div class="nav-label">Город</div>
         </div>
-
-
-        <div
-            class="nav-item"
-            onclick="switchTab('pvp', this)"
-        >
+        <div class="nav-item" onclick="switchTab('pvp', this)">
             <div class="nav-icon">⚔️</div>
             <div class="nav-label">ПвП</div>
         </div>
-
-
-        <div
-            class="nav-item"
-            onclick="switchTab('shop', this)"
-        >
+        <div class="nav-item" onclick="switchTab('shop', this)">
             <div class="nav-icon">🪙</div>
             <div class="nav-label">Магазин</div>
         </div>
-
-
-        <div
-            class="nav-item"
-            onclick="switchTab('friends', this)"
-        >
+        <div class="nav-item" onclick="switchTab('friends', this)">
             <div class="nav-icon">👥</div>
             <div class="nav-label">Друзья</div>
         </div>
-
-
-        <div
-            class="nav-item"
-            onclick="switchTab('settings', this)"
-        >
+        <div class="nav-item" onclick="switchTab('settings', this)">
             <div class="nav-icon">⚙️</div>
             <div class="nav-label">Настройки</div>
         </div>
-
     </nav>
-
 
 </div>
 
-
 <script>
-
-    /* =========================================================
-       TELEGRAM
-       ========================================================= */
-
     const tg = window.Telegram?.WebApp;
 
-
     if (tg) {
-
         tg.ready();
-
         tg.expand();
-
         try {
-
             tg.setHeaderColor('#08090d');
-
             tg.setBackgroundColor('#08090d');
-
         } catch (e) {}
-
     }
 
-
-    /* =========================================================
-       ИМЯ TELEGRAM
-       ========================================================= */
-
-    if (
-        tg &&
-        tg.initDataUnsafe &&
-        tg.initDataUnsafe.user
-    ) {
-
-        const user =
-            tg.initDataUnsafe.user;
-
-
-        const userName =
-            user.first_name;
-
-
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const user = tg.initDataUnsafe.user;
+        const userName = user.first_name;
         if (userName) {
-
-            document
-                .querySelectorAll('.nickname')
-                .forEach(function(el) {
-
-                    el.textContent =
-                        userName;
-
-                });
-
+            document.querySelectorAll('.nickname').forEach(function(el) {
+                el.textContent = userName;
+            });
         }
-
     }
-
-
-    /* =========================================================
-       ЗАГРУЗКА
-       ========================================================= */
 
     let progress = 0;
+    const fill = document.getElementById('progress-fill');
+    const statusText = document.getElementById('loading-status');
+    const loadingScreen = document.getElementById('loading-screen');
+    const navBar = document.getElementById('nav-bar');
 
-
-    const fill =
-        document.getElementById(
-            'progress-fill'
-        );
-
-
-    const statusText =
-        document.getElementById(
-            'loading-status'
-        );
-
-
-    const loadingScreen =
-        document.getElementById(
-            'loading-screen'
-        );
-
-
-    const navBar =
-        document.getElementById(
-            'nav-bar'
-        );
-
-
-    const loadingInterval =
-        setInterval(function() {
-
-            progress +=
-                Math.floor(
-                    Math.random() * 6
-                ) + 2;
-
-
-            if (progress >= 100) {
-
-                progress = 100;
-
-                fill.style.width =
-                    '100%';
-
-                statusText.textContent =
-                    'Загрузка мира... 100%';
-
-                clearInterval(
-                    loadingInterval
-                );
-
-                finishLoading();
-
-                return;
-            }
-
-
-            fill.style.width =
-                progress + '%';
-
-
-            statusText.textContent =
-                'Загрузка мира... ' +
-                progress +
-                '%';
-
-
-        }, 70);
-
+    const loadingInterval = setInterval(function() {
+        progress += Math.floor(Math.random() * 3) + 1;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(loadingInterval);
+            finishLoading();
+        }
+        fill.style.width = progress + '%';
+        statusText.textContent = 'Загрузка мира... ' + progress + '%';
+    }, 50);
 
     function finishLoading() {
-
         setTimeout(function() {
-
-            loadingScreen.style.opacity =
-                '0';
-
-
+            loadingScreen.style.opacity = '0';
             setTimeout(function() {
-
-                loadingScreen.style.display =
-                    'none';
-
-
-                navBar.classList.add(
-                    'visible'
-                );
-
-
-                showScreen(
-                    'hero'
-                );
-
-
-            }, 500);
-
-
-        }, 300);
-
+                loadingScreen.style.display = 'none';
+                navBar.classList.add('visible');
+                showScreen('hero');
+            }, 400);
+        }, 150);
     }
-
-
-    /* =========================================================
-       ЭКРАНЫ
-       ========================================================= */
 
     function showScreen(tabName) {
-
-        document
-            .querySelectorAll('.screen')
-            .forEach(function(screen) {
-
-                screen.classList.remove(
-                    'active'
-                );
-
-            });
-
-
-        const target =
-            document.getElementById(
-                'screen-' + tabName
-            );
-
-
-        if (target) {
-
-            target.classList.add(
-                'active'
-            );
-
+        document.querySelectorAll('.screen').forEach(function(screen) {
+            screen.classList.remove('active');
+        });
+        const targetScreen = document.getElementById('screen-' + tabName);
+        if (targetScreen) {
+            targetScreen.classList.add('active');
         }
-
     }
 
-
-    /* =========================================================
-       МЕНЮ
-       ========================================================= */
-
-    function switchTab(
-        tabName,
-        element
-    ) {
-
+    function switchTab(tabName, element) {
+        document.querySelectorAll('.nav-item').forEach(function(item) {
+            item.classList.remove('active');
+        });
+        element.classList.add('active');
         showScreen(tabName);
-
-
-        document
-            .querySelectorAll('.nav-item')
-            .forEach(function(item) {
-
-                item.classList.remove(
-                    'active'
-                );
-
-            });
-
-
-        if (element) {
-
-            element.classList.add(
-                'active'
-            );
-
-        }
-
     }
 
-
-    /* =========================================================
-       КНОПКИ
-       ========================================================= */
-
-    function gameAction(message) {
-
-        if (
-            tg &&
-            typeof tg.showPopup === 'function'
-        ) {
-
-            tg.showPopup({
-
-                title:
-                    'Хроники Эльгоры',
-
-                message:
-                    message,
-
-                buttons: [
-                    {
-                        type: 'ok'
-                    }
-                ]
-
-            });
-
+    function gameAction(msg) {
+        if (tg && tg.HapticFeedback) {
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+        if (tg && tg.showAlert) {
+            tg.showAlert(msg);
         } else {
-
-            alert(message);
-
+            alert(msg);
         }
-
     }
-
 </script>
-
 
 </body>
 </html>
