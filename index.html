@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -106,18 +107,23 @@
             text-align: center;
 
             padding-top:
-                calc(12px + env(safe-area-inset-top));
+                calc(10px + env(safe-area-inset-top));
 
             padding-left:
-                calc(16px + env(safe-area-inset-left));
+                calc(12px + env(safe-area-inset-left));
 
             padding-right:
-                calc(16px + env(safe-area-inset-right));
+                calc(12px + env(safe-area-inset-right));
 
             padding-bottom:
-                calc(82px + env(safe-area-inset-bottom));
+                calc(76px + env(safe-area-inset-bottom));
 
-            background-position: center;
+            /*
+             * Увеличиваем фон немного больше экрана.
+             * Это предотвращает появление серых/пустых полос
+             * из-за пропорций изображения.
+             */
+            background-position: center center;
             background-size: cover;
             background-repeat: no-repeat;
 
@@ -133,7 +139,9 @@
         }
 
 
-        /* затемнение игровых экранов */
+        /* =========================================================
+           ЗАТЕМНЕНИЕ ИГРОВОЙ СЦЕНЫ
+           ========================================================= */
 
         .screen::before {
             content: "";
@@ -144,9 +152,9 @@
             background:
                 linear-gradient(
                     180deg,
-                    rgba(4, 5, 8, .25) 0%,
-                    rgba(4, 5, 8, .55) 55%,
-                    rgba(4, 5, 8, .82) 100%
+                    rgba(4, 5, 8, .18) 0%,
+                    rgba(4, 5, 8, .30) 45%,
+                    rgba(4, 5, 8, .72) 100%
                 );
 
             z-index: 1;
@@ -164,6 +172,8 @@
 
             z-index: 10;
 
+            flex-shrink: 0;
+
             width: 100%;
             max-width: 420px;
 
@@ -174,27 +184,27 @@
             justify-content: space-between;
             align-items: center;
 
-            padding: 8px 10px;
+            padding: 7px 9px;
 
             margin-top: 2px;
 
             background:
                 linear-gradient(
                     135deg,
-                    rgba(18, 19, 25, .92),
-                    rgba(10, 11, 15, .86)
+                    rgba(18, 19, 25, .90),
+                    rgba(10, 11, 15, .78)
                 );
 
-            border: 1px solid rgba(243, 156, 18, .35);
+            border: 1px solid rgba(243, 156, 18, .30);
 
             border-radius: 16px;
 
             box-shadow:
-                0 8px 30px rgba(0,0,0,.35),
+                0 6px 22px rgba(0,0,0,.28),
                 inset 0 1px 0 rgba(255,255,255,.04);
 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
 
@@ -203,6 +213,8 @@
             align-items: center;
 
             gap: 9px;
+
+            min-width: 0;
         }
 
 
@@ -239,6 +251,8 @@
             align-items: flex-start;
 
             gap: 2px;
+
+            min-width: 0;
         }
 
 
@@ -280,13 +294,15 @@
 
             gap: 5px;
 
+            flex-shrink: 0;
+
             padding: 7px 10px;
 
             border-radius: 12px;
 
-            background: rgba(0,0,0,.45);
+            background: rgba(0,0,0,.40);
 
-            border: 1px solid rgba(243,156,18,.35);
+            border: 1px solid rgba(243,156,18,.32);
 
             color: #ffc04d;
 
@@ -296,18 +312,20 @@
 
 
         /* =========================================================
-           ЦЕНТР
+           ЦЕНТРАЛЬНАЯ ОБЛАСТЬ
            ========================================================= */
 
         .content-box {
             position: relative;
 
-            z-index: 10;
+            z-index: 5;
 
             width: 100%;
             max-width: 420px;
 
-            margin: auto 0;
+            flex: 1;
+
+            min-height: 0;
 
             display: flex;
             flex-direction: column;
@@ -315,7 +333,9 @@
             align-items: center;
             justify-content: center;
 
-            padding: 25px 10px;
+            padding:
+                20px 10px
+                calc(10px + env(safe-area-inset-bottom));
         }
 
 
@@ -332,8 +352,8 @@
             line-height: 1.15;
 
             text-shadow:
-                0 3px 8px rgba(0,0,0,.9),
-                0 0 18px rgba(243,156,18,.3);
+                0 3px 8px rgba(0,0,0,.95),
+                0 0 18px rgba(243,156,18,.30);
         }
 
 
@@ -342,15 +362,15 @@
 
             margin-bottom: 20px;
 
-            color: #e1e5ea;
+            color: #f0f2f4;
 
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
 
             line-height: 1.5;
 
             text-shadow:
-                0 2px 5px rgba(0,0,0,.9);
+                0 2px 6px rgba(0,0,0,1);
         }
 
 
@@ -383,6 +403,9 @@
 
             cursor: pointer;
 
+            -webkit-appearance: none;
+            appearance: none;
+
             box-shadow:
                 0 5px 18px rgba(243,156,18,.35),
                 inset 0 1px 0 rgba(255,255,255,.25);
@@ -396,6 +419,11 @@
         .action-btn:active {
             transform: scale(.95);
             filter: brightness(.9);
+        }
+
+
+        .action-btn:focus {
+            outline: none;
         }
 
 
@@ -414,7 +442,7 @@
 
             width: 100%;
 
-            min-height: 70px;
+            height: 70px;
 
             padding:
                 4px
@@ -430,7 +458,7 @@
             background:
                 linear-gradient(
                     180deg,
-                    rgba(15,16,21,.88),
+                    rgba(15,16,21,.90),
                     rgba(9,10,14,.98)
                 );
 
@@ -438,7 +466,7 @@
                 1px solid rgba(243,156,18,.28);
 
             box-shadow:
-                0 -10px 30px rgba(0,0,0,.35);
+                0 -10px 30px rgba(0,0,0,.40);
 
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
@@ -557,13 +585,6 @@
         }
 
 
-        /*
-        ВАЖНО:
-        Картинка специально увеличена до 120%.
-        Благодаря этому её серая рамка должна уйти
-        за границы экрана.
-        */
-
         .loading-bg {
             position: absolute;
 
@@ -619,14 +640,9 @@
         }
 
 
-        /*
-        =========================================================
-        НАЗВАНИЕ
-        =========================================================
-
-        ОСТАВЛЯЕМ.
-        Это дополнительное название поверх картинки.
-        */
+        /* =========================================================
+           НАЗВАНИЕ
+           ========================================================= */
 
         .game-title {
             position: relative;
@@ -803,18 +819,19 @@
 
 
         /* =========================================================
-           НЕБОЛЬШИЕ ЭКРАНЫ
+           АДАПТАЦИЯ ПОД НЕБОЛЬШИЕ ЭКРАНЫ
            ========================================================= */
 
-        @media (max-height: 650px) {
+        @media (max-height: 700px) {
 
             .top-header {
-                min-height: 52px;
+                min-height: 54px;
+                margin-top: 0;
             }
 
             .avatar {
-                width: 34px;
-                height: 34px;
+                width: 35px;
+                height: 35px;
                 font-size: 17px;
             }
 
@@ -823,14 +840,69 @@
                 padding-bottom: 10px;
             }
 
+            .section-title {
+                margin-bottom: 7px;
+            }
+
             .section-desc {
                 margin-bottom: 14px;
             }
 
             .nav-bar {
-                min-height: 64px;
+                height: 64px;
             }
 
+            .nav-icon {
+                font-size: 17px;
+            }
+
+            .nav-label {
+                font-size: 8px;
+            }
+        }
+
+
+        @media (max-height: 600px) {
+
+            .top-header {
+                min-height: 50px;
+            }
+
+            .avatar {
+                width: 32px;
+                height: 32px;
+            }
+
+            .nickname {
+                font-size: 12px;
+            }
+
+            .user-lvl {
+                font-size: 8px;
+            }
+
+            .balance-badge {
+                padding: 6px 8px;
+                font-size: 12px;
+            }
+
+            .section-title {
+                font-size: 25px;
+            }
+
+            .section-desc {
+                font-size: 13px;
+                margin-bottom: 12px;
+            }
+
+            .action-btn {
+                padding: 11px 22px;
+                font-size: 14px;
+            }
+
+            .nav-bar {
+                height: 60px;
+            }
         }
 
 
@@ -840,6 +912,7 @@
         }
 
     </style>
+
 </head>
 
 
@@ -952,6 +1025,7 @@
             </p>
 
             <button
+                type="button"
                 class="action-btn"
                 onclick="gameAction('В бой!')"
             >
@@ -1014,6 +1088,7 @@
             </p>
 
             <button
+                type="button"
                 class="action-btn"
                 onclick="gameAction('В таверну')"
             >
@@ -1076,6 +1151,7 @@
             </p>
 
             <button
+                type="button"
                 class="action-btn"
                 onclick="gameAction('Поиск бойца...')"
             >
@@ -1138,6 +1214,7 @@
             </p>
 
             <button
+                type="button"
                 class="action-btn"
                 onclick="gameAction('Магазин')"
             >
@@ -1200,6 +1277,7 @@
             </p>
 
             <button
+                type="button"
                 class="action-btn"
                 onclick="gameAction('Ссылка скопирована')"
             >
@@ -1262,6 +1340,7 @@
             </p>
 
             <button
+                type="button"
                 class="action-btn"
                 onclick="gameAction('Сохранено')"
             >
@@ -1274,7 +1353,7 @@
 
 
     <!-- =========================================================
-         МЕНЮ
+         НИЖНЕЕ МЕНЮ
          ========================================================= -->
 
     <nav
@@ -1347,8 +1426,7 @@
        TELEGRAM
        ========================================================= */
 
-    const tg =
-        window.Telegram?.WebApp;
+    const tg = window.Telegram?.WebApp;
 
 
     if (tg) {
@@ -1359,13 +1437,9 @@
 
         try {
 
-            tg.setHeaderColor(
-                '#08090d'
-            );
+            tg.setHeaderColor('#08090d');
 
-            tg.setBackgroundColor(
-                '#08090d'
-            );
+            tg.setBackgroundColor('#08090d');
 
         } catch (e) {}
 
@@ -1384,6 +1458,7 @@
 
         const user =
             tg.initDataUnsafe.user;
+
 
         const userName =
             user.first_name;
@@ -1449,12 +1524,19 @@
 
                 progress = 100;
 
+                fill.style.width =
+                    '100%';
+
+                statusText.textContent =
+                    'Загрузка мира... 100%';
+
                 clearInterval(
                     loadingInterval
                 );
 
                 finishLoading();
 
+                return;
             }
 
 
@@ -1579,7 +1661,7 @@
 
         if (
             tg &&
-            tg.showPopup
+            typeof tg.showPopup === 'function'
         ) {
 
             tg.showPopup({
@@ -1607,6 +1689,7 @@
     }
 
 </script>
+
 
 </body>
 </html>
